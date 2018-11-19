@@ -15,12 +15,11 @@ public class FCHJGenerator implements DataGenerator {
 
     DataSet dataSet;
     int trainSize;
-
-    public FCHJGenerator(String filename,double trainPercent,int shift_amount){
+    public FCHJGenerator(double trainPercent,int sequenceLength, int shift_amount){
         ArrayList<Double> spread=new ArrayList<>();
         ArrayList<LocalDate> dates=new ArrayList<>();
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
+            BufferedReader reader = new BufferedReader(new FileReader("FCHJ.csv"));
             String line = "";
             while ((line = reader.readLine()) != null) {
                 String[] elems = line.split(",");
@@ -33,14 +32,19 @@ public class FCHJGenerator implements DataGenerator {
         } catch (Exception e){
             String tmp="";
         }
-        trainSize=(int)(trainPercent*(spread.size()-shift_amount));
-        double[] data=new double[spread.size()-shift_amount];
-        double[] dataShifted=new double[spread.size()-shift_amount];
-        for (int i = 0; i < spread.size()-shift_amount; i++) {
-            data[i]=spread.get(i);
-            dataShifted[i]=spread.get(i+shift_amount);
+        int numOfSamples=spread.size()-sequenceLength-shift_amount;
+
+        trainSize=(int)(trainPercent*numOfSamples);
+        double[][][] data=new double[numOfSamples][1][sequenceLength];
+        double[][][] dataShifted=new double[numOfSamples][1][sequenceLength];
+        for (int i = 0; i < numOfSamples; i++) {
+            for (int i1 = 0; i1 < sequenceLength; i1++) {
+                data[i][0][i1]=spread.get(i+i1);
+                dataShifted[i][0][i1]=spread.get(i+i1+shift_amount);
+            }
         }
         dataSet=new org.nd4j.linalg.dataset.DataSet(Nd4j.create(data),Nd4j.create(dataShifted));
+        String tmp="";
     }
 
     public DataSet getTrainDataSet() {

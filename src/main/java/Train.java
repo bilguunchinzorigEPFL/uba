@@ -1,19 +1,27 @@
 import data.DataGenerator;
 import data.FCHJGenerator;
 import data.FakeDataGenerator;
+import network.LSTMNetwork;
 import network.Network;
 import network.TestNetwork;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.learning.config.Sgd;
+import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 /**
  * Created by beku on 11/8/2018.
  */
 public class Train {
-    static Network trainNetwork=new TestNetwork();
-    static DataGenerator generator=new FakeDataGenerator(4,4,0);
-    static int epochs=10000;
+    static Network trainNetwork=new LSTMNetwork(
+            new int[]{1,5,3},
+            new Sgd(0.1),
+            LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD.getILossFunction(),
+            false
+    );
+    static DataGenerator generator=new FCHJGenerator(0.8,100,1);
+    static int epochs=1000;
 
     public static void main(String... args){
         MultiLayerNetwork network=new MultiLayerNetwork(trainNetwork.getConfig());

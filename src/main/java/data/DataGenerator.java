@@ -7,5 +7,6 @@ import org.nd4j.linalg.dataset.api.DataSet;
  */
 public interface DataGenerator {
     DataSet getTrainDataSet();
+    DataSet getValidationDataSet();
     DataSet getTestDataSet();
 }

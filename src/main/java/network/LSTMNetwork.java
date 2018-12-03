@@ -5,6 +5,7 @@ import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.layers.LSTM;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.learning.config.Sgd;
@@ -39,12 +40,12 @@ public class LSTMNetwork implements Network{
             numOfInput=numOfNeuronsEachLayer[i];
         }
         if(regression){
-            listBuilder.layer(i-1,new OutputLayer.Builder(lossFunction)
+            listBuilder.layer(i-1,new RnnOutputLayer.Builder(lossFunction)
                     .activation(Activation.IDENTITY)
                     .nIn(numOfInput).nOut(numOfNeuronsEachLayer[i]).build()
             );
         } else {
-            listBuilder.layer(i-1,new OutputLayer.Builder(lossFunction)
+            listBuilder.layer(i-1,new RnnOutputLayer.Builder(lossFunction)
                     .activation(Activation.SOFTMAX)
                     .nIn(numOfInput).nOut(numOfNeuronsEachLayer[i]).build()
             );

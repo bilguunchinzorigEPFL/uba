@@ -37,10 +37,15 @@ public class FakeDataGenerator implements DataGenerator{
         data=new org.nd4j.linalg.dataset.DataSet(inputs,outputs);
     }
 
+    @Override
     public DataSet getTrainDataSet() {
         return data;//.getRange(0,trainSize);
     }
 
+    @Override
+    public DataSet getValidationDataSet() {return data;}
+
+    @Override
     public DataSet getTestDataSet() {
         return data;//.getRange(trainSize,trainSize+testSize);
     }

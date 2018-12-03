@@ -15,12 +15,12 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
  */
 public class Train {
     static Network trainNetwork=new LSTMNetwork(
-            new int[]{1,5,3},
+            new int[]{1,5,2},
             new Sgd(0.1),
             LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD.getILossFunction(),
             false
     );
-    static DataGenerator generator=new FCHJGenerator(0.8,100,1);
+    static DataGenerator generator=new FCHJGenerator(0.8,100,1,false);
     static int epochs=1000;
 
     public static void main(String... args){
@@ -29,6 +29,10 @@ public class Train {
         network.init();
         for (int i = 0; i < epochs; i++) {
             network.fit(generator.getTrainDataSet());
+            INDArray preds=network.output(generator.getValidationDataSet().getFeatures());
+            eval.eval(generator.getValidationDataSet().getLabels(),preds);
+            String result=eval.stats();
+            System.out.println(result);
         }
         INDArray preds=network.output(generator.getTestDataSet().getFeatures());
         eval.eval(generator.getTestDataSet().getLabels(),preds);

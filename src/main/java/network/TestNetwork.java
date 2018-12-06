@@ -32,4 +32,5 @@ public class TestNetwork extends Network {
     @Override
     public void evaluate(DataSet data){}
 
+
 }

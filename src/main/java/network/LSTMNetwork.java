@@ -10,10 +10,17 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.api.DataSet;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.learning.config.Sgd;
 import org.nd4j.linalg.lossfunctions.ILossFunction;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+
+import java.util.ArrayList;
+
+import common.Quote;
+import common.QuoteProcessors;
+import common.SimulationResult;
 
 public class LSTMNetwork extends Network{
 
@@ -66,5 +73,20 @@ public class LSTMNetwork extends Network{
             String result=eval.stats();
             System.out.println(result);
         }
+    }
+
+
+    @Override
+    public SimulationResult simulate(String name, ArrayList<Quote[]> quotes) {
+        SimulationResult result=new SimulationResult("LSTM",quotes.get(0).length);
+        ArrayList<Double> spreads=QuoteProcessors.calcSpreadsNormalized(quotes);
+        for (int i = 0; i < quotes.size(); i++) {
+            INDArray pred=network.output(Nd4j.create(spreads.subList(i-100,i)));
+            double pos=pred.getDouble(pred.length()-1);
+            double[] positions=new double[]{pos,-pos};
+            result.process(quotes.get(i),positions);
+        }
+        result.calculateOverall();
+        return result;
     }
 }

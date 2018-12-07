@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import common.Quote;
+
 /**
  * Created by beku on 11/13/2018.
  */
@@ -17,6 +19,7 @@ public class FCHJGenerator implements DataGenerator {
     DataSet dataSet;
     int trainSize;
     boolean regression;
+
     public FCHJGenerator(double trainPercent,int sequenceLength, int shift_amount, boolean regression){
         ArrayList<Double> spread=new ArrayList<>();
         ArrayList<LocalDate> dates=new ArrayList<>();
@@ -52,6 +55,11 @@ public class FCHJGenerator implements DataGenerator {
             }
             dataSet=new org.nd4j.linalg.dataset.DataSet(Nd4j.create(data),Nd4j.create(dataShifted));
         }
+    }
+
+    @Override
+    public ArrayList<Quote[]> getAllQuotes() {
+        return null;
     }
 
     @Override

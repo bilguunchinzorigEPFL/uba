@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import common.Quote;
-import common.QuoteProcessors;
 
 /**
  * Created by beku on 11/13/2018.
@@ -20,10 +19,9 @@ public class SilverGoldGenerator implements DataGenerator {
     DataSet dataSet;
     int trainSize;
     boolean regression;
+    ArrayList<Quote[]> quotes;
 
     public SilverGoldGenerator(double trainPercent,int sequenceLength, int shift_amount, boolean regression){
-        ArrayList<Quote> silver=new ArrayList<>();
-        ArrayList<Quote> gold=new ArrayList<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader("SilverGold.csv"));
             String line = "";
@@ -31,16 +29,18 @@ public class SilverGoldGenerator implements DataGenerator {
                 String[] elems = line.split(";");
                 if(elems.length==2){
                     LocalDateTime timeStamp=LocalDateTime.parse(elems[0]);
-                    silver.add(new Quote(timeStamp,Double.valueOf(elems[2]),Double.valueOf(elems[1])));
-                    gold.add(new Quote(timeStamp,Double.valueOf(elems[4]),Double.valueOf(elems[3])));
+                    quotes.add(new Quote[]{
+                            new Quote(timeStamp,Double.valueOf(elems[2]),Double.valueOf(elems[1])),
+                            new Quote(timeStamp,Double.valueOf(elems[4]),Double.valueOf(elems[3]))
+                    });
                 }
             }
             reader.close();
         } catch (Exception e){
             e.printStackTrace();
         }
-        double[] spread= QuoteProcessors.calcSpreadsNormalized(silver,gold);
-        int numOfSamples=spread.length-sequenceLength-shift_amount;
+        ArrayList<Double> spread= Quote.calcSpreadsNormalized(quotes,new double[]{1,-1});
+        int numOfSamples=spread.size()-sequenceLength-shift_amount;
         trainSize=(int)(trainPercent*numOfSamples);
 
         if(regression){
@@ -50,9 +50,9 @@ public class SilverGoldGenerator implements DataGenerator {
             double[][][] dataShifted=new double[numOfSamples][2][sequenceLength];
             for (int i = 0; i < numOfSamples; i++) {
                 for (int i1 = 0; i1 < sequenceLength; i1++) {
-                    data[i][0][i1]=spread[i+i1];
+                    data[i][0][i1]=spread.get(i+i1);
                     int idx=0;
-                    if((spread[i+i1+shift_amount]-spread[i+i1])>0){idx=1;}
+                    if((spread.get(i+i1+shift_amount)-spread.get(i+i1))>0){idx=1;}
                     dataShifted[i][idx][i1]=1;
                 }
             }
@@ -73,5 +73,10 @@ public class SilverGoldGenerator implements DataGenerator {
     @Override
     public DataSet getTestDataSet() {
         return dataSet.getRange(trainSize,dataSet.numExamples());
+    }
+
+    @Override
+    public ArrayList<Quote[]> getAllQuotes() {
+        return null;
     }
 }

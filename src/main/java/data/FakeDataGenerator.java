@@ -4,6 +4,10 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.api.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
 
+import java.util.ArrayList;
+
+import common.Quote;
+
 /**
  * Created by beku on 11/12/2018.
  */
@@ -48,5 +52,10 @@ public class FakeDataGenerator implements DataGenerator{
     @Override
     public DataSet getTestDataSet() {
         return data;//.getRange(trainSize,trainSize+testSize);
+    }
+
+    @Override
+    public ArrayList<Quote[]> getAllQuotes() {
+        return null;
     }
 }

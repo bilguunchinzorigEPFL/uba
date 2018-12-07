@@ -19,7 +19,6 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 import java.util.ArrayList;
 
 import common.Quote;
-import common.QuoteProcessors;
 import common.SimulationResult;
 
 public class LSTMNetwork extends Network{
@@ -79,7 +78,7 @@ public class LSTMNetwork extends Network{
     @Override
     public SimulationResult simulate(String name, ArrayList<Quote[]> quotes) {
         SimulationResult result=new SimulationResult("LSTM",quotes.get(0).length);
-        ArrayList<Double> spreads=QuoteProcessors.calcSpreadsNormalized(quotes);
+        ArrayList<Double> spreads=Quote.calcSpreadsNormalized(quotes,new double[]{1,-1});
         for (int i = 0; i < quotes.size(); i++) {
             INDArray pred=network.output(Nd4j.create(spreads.subList(i-100,i)));
             double pos=pred.getDouble(pred.length()-1);

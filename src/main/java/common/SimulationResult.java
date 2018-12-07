@@ -43,20 +43,14 @@ public class SimulationResult {
             tradesGroupByDate.get(key).add(trade);
         }
         dailypnl=new HashMap<>();
-        double sum=0;
         for (LocalDate localDate : tradesGroupByDate.keySet()) {
             double totalPnl=0;
             for (Trade trade : tradesGroupByDate.get(localDate)) {
                 totalPnl+=trade.pnl;
             }
-            sum+=totalPnl;
             dailypnl.put(localDate,totalPnl);
         }
-        double mean=sum/dailypnl.size();
-        double sqSum=0;
-        for (LocalDate localDate : dailypnl.keySet()) {
-            sqSum+=Math.pow(dailypnl.get(localDate)-mean,2);
-        }
-        sharpe=Math.sqrt(sqSum/(dailypnl.size()-1));
+        double[] meanstd=Helpers.meanAndStd(dailypnl.values());
+        sharpe=meanstd[0]/meanstd[1];
     }
 }

@@ -24,6 +24,9 @@ public class SimulationResult {
     public void process(Quote[] quotes, double[] positions){
         for (int i = 0; i < prevTrades.length; i++) {
             Trade prevTrade=prevTrades[i];
+            if(prevTrade==null){
+                prevTrade=new Trade(quotes[i].timeStamp,quotes[i].getMidPrice(),0,0);
+            }
             Quote quote=quotes[i];
             double quantity=positions[i]-prevTrade.position;
             double executed_price=quotes[i].askPrice;
@@ -52,5 +55,13 @@ public class SimulationResult {
         }
         double[] meanstd=Helpers.meanAndStd(dailypnl.values());
         sharpe=meanstd[0]/meanstd[1];
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder=new StringBuilder();
+        builder.append(name+":");
+        builder.append(sharpe);
+        return builder.toString();
     }
 }

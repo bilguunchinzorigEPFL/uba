@@ -1,5 +1,6 @@
 import data.DataGenerator;
 import data.FCHJGenerator;
+import data.SilverGoldGenerator;
 import network.LSTMNetwork;
 import network.Network;
 
@@ -13,11 +14,11 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 public class Trainer {
     Network trainNetwork=new LSTMNetwork(
             new int[]{1,5,2},
-            new Adam(0.1),
+            new Adam(0.2),
             LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD.getILossFunction(),
             false
     );
-    DataGenerator generator=new FCHJGenerator(0.8,100,1,false);
+    DataGenerator generator;
     int epochs=1000;
 
     public Trainer(){}

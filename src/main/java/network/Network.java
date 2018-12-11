@@ -16,5 +16,5 @@ public abstract class Network {
 
     public void evaluate(DataSet data){}
 
-    public SimulationResult simulate(String name,ArrayList<Quote[]> quotes){return null;}
+    public SimulationResult simulate(String name,ArrayList<Quote[]> quotes, DataSet dataset){return null;}
 }

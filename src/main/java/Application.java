@@ -1,8 +1,10 @@
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
+import common.SimulationResult;
 import data.DataGenerator;
 import data.FCHJGenerator;
+import data.SilverGoldGenerator;
 import network.LSTMNetwork;
 import network.Network;
 
@@ -11,18 +13,19 @@ import network.Network;
  */
 public class Application {
     public static void main(String... args){
-        DataGenerator data=new FCHJGenerator(0.8,100,1,false);
+        DataGenerator data=new SilverGoldGenerator(0.8,5,1,false,10);
         Trainer trainer=new Trainer(
                 new LSTMNetwork(
-                    new int[]{1,5,2},
+                    new int[]{1,10,10,10,2},
                     new Adam(0.1),
                     LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD.getILossFunction(),
                     false
                 ),
                 data,
-                1000
+                10
         );
         trainer.train();
-        trainer.trainNetwork.simulate("Test run",data.getAllQuotes());
+        SimulationResult result=trainer.trainNetwork.simulate("Test run",data.getAllQuotes(),data.getDataSet());
+        System.out.print(result.toString());
     }
 }

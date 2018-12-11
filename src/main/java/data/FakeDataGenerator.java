@@ -58,4 +58,9 @@ public class FakeDataGenerator implements DataGenerator{
     public ArrayList<Quote[]> getAllQuotes() {
         return null;
     }
+
+    @Override
+    public DataSet getDataSet() {
+        return null;
+    }
 }

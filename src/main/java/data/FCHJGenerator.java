@@ -73,6 +73,11 @@ public class FCHJGenerator implements DataGenerator {
     }
 
     @Override
+    public DataSet getDataSet() {
+        return null;
+    }
+
+    @Override
     public DataSet getTestDataSet() {
         return dataSet.getRange(trainSize,dataSet.numExamples());
     }

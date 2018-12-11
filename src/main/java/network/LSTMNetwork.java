@@ -76,12 +76,14 @@ public class LSTMNetwork extends Network{
 
 
     @Override
-    public SimulationResult simulate(String name, ArrayList<Quote[]> quotes) {
+    public SimulationResult simulate(String name, ArrayList<Quote[]> quotes, DataSet data) {
         SimulationResult result=new SimulationResult("LSTM",quotes.get(0).length);
         ArrayList<Double> spreads=Quote.calcSpreadsNormalized(quotes,new double[]{1,-1});
-        for (int i = 0; i < quotes.size(); i++) {
-            INDArray pred=network.output(Nd4j.create(spreads.subList(i-100,i)));
-            double pos=pred.getDouble(pred.length()-1);
+        INDArray preds=network.output(data.getFeatures());
+        INDArray tmp=preds.getColumn(0).getColumn(preds.shape()[2]-1);
+        int seqLength=5;
+        for (int i = seqLength; i < quotes.size(); i++) {
+            double pos=tmp.getFloat(i-seqLength);
             double[] positions=new double[]{pos,-pos};
             result.process(quotes.get(i),positions);
         }

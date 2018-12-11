@@ -7,6 +7,7 @@ import org.nd4j.linalg.factory.Nd4j;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 import common.Quote;
@@ -19,20 +20,28 @@ public class SilverGoldGenerator implements DataGenerator {
     DataSet dataSet;
     int trainSize;
     boolean regression;
+    int sampleRate=0;
     ArrayList<Quote[]> quotes;
 
-    public SilverGoldGenerator(double trainPercent,int sequenceLength, int shift_amount, boolean regression){
+    public SilverGoldGenerator(double trainPercent,int sequenceLength, int shift_amount, boolean regression, int sampleRate){
+        quotes=new ArrayList<>();
+        this.sampleRate=sampleRate;
         try {
             BufferedReader reader = new BufferedReader(new FileReader("SilverGold.csv"));
             String line = "";
+            int waited=0;
             while ((line = reader.readLine()) != null) {
-                String[] elems = line.split(";");
-                if(elems.length==2){
-                    LocalDateTime timeStamp=LocalDateTime.parse(elems[0]);
-                    quotes.add(new Quote[]{
-                            new Quote(timeStamp,Double.valueOf(elems[2]),Double.valueOf(elems[1])),
-                            new Quote(timeStamp,Double.valueOf(elems[4]),Double.valueOf(elems[3]))
-                    });
+                waited+=1;
+                if(waited==sampleRate){
+                    String[] elems = line.split(";");
+                    if(elems.length==5){
+                        LocalDateTime timeStamp= ZonedDateTime.parse(elems[0]).toLocalDateTime();
+                        quotes.add(new Quote[]{
+                                new Quote(timeStamp,Double.valueOf(elems[2]),Double.valueOf(elems[1])),
+                                new Quote(timeStamp,Double.valueOf(elems[4]),Double.valueOf(elems[3]))
+                        });
+                    }
+                    waited=0;
                 }
             }
             reader.close();
@@ -40,7 +49,7 @@ public class SilverGoldGenerator implements DataGenerator {
             e.printStackTrace();
         }
         ArrayList<Double> spread= Quote.calcSpreadsNormalized(quotes,new double[]{1,-1});
-        int numOfSamples=spread.size()-sequenceLength-shift_amount;
+        int numOfSamples=spread.size()-sequenceLength-shift_amount+1;
         trainSize=(int)(trainPercent*numOfSamples);
 
         if(regression){
@@ -77,6 +86,11 @@ public class SilverGoldGenerator implements DataGenerator {
 
     @Override
     public ArrayList<Quote[]> getAllQuotes() {
-        return null;
+        return quotes;
+    }
+
+    @Override
+    public DataSet getDataSet() {
+        return dataSet;
     }
 }

@@ -34,6 +34,10 @@ public class Quote{
         }
         return result;
     }
+
+    public double getMidPrice(){
+        return (askPrice+bidPrice)*0.5;
+    }
     public static ArrayList<Quote[]> zipQuotes(ArrayList<Quote>... target){
         ArrayList<Quote[]> result=new ArrayList<>();
         for (int i = 0; i < target[0].size(); i++) {

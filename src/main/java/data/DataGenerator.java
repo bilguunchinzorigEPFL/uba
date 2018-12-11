@@ -10,6 +10,7 @@ import common.Quote;
  * Created by beku on 11/12/2018.
  */
 public interface DataGenerator {
+    DataSet getDataSet();
     DataSet getTrainDataSet();
     DataSet getValidationDataSet();
     DataSet getTestDataSet();

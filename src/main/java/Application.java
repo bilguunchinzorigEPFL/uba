@@ -17,12 +17,12 @@ public class Application {
         Trainer trainer=new Trainer(
                 new LSTMNetwork(
                     new int[]{1,10,10,10,2},
-                    new Adam(0.1),
+                    new Adam(0.5),
                     LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD.getILossFunction(),
                     false
                 ),
                 data,
-                10
+                5
         );
         trainer.train();
         SimulationResult result=trainer.trainNetwork.simulate("Test run",data.getAllQuotes(),data.getDataSet());

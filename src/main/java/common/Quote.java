@@ -17,6 +17,10 @@ public class Quote{
         this.askPrice = askPrice;
     }
 
+    public double getMidPrice(){
+        return (askPrice+bidPrice)*0.5;
+    }
+
     public static ArrayList<Double> calcSpreadsNormalized(ArrayList<Quote[]> target,double[] vector){
         //Lazy normalization
         ArrayList<ArrayList<Quote>> unzipped=unZipQuotes(target);
@@ -35,9 +39,6 @@ public class Quote{
         return result;
     }
 
-    public double getMidPrice(){
-        return (askPrice+bidPrice)*0.5;
-    }
     public static ArrayList<Quote[]> zipQuotes(ArrayList<Quote>... target){
         ArrayList<Quote[]> result=new ArrayList<>();
         for (int i = 0; i < target[0].size(); i++) {

@@ -23,7 +23,7 @@ public class Application {
                     method
                 ),
                 data,
-                50
+                5
         );
         trainer.train();
         SimulationResult result=trainer.trainNetwork.simulate("Test run",data.getAllQuotes(),data.getDataSet());

@@ -7,7 +7,6 @@ import common.Quote;
 /**
  * Created by beku on 12/14/2018.
  */
-//TODO should I use enum
 public interface ProcessingMethod{
     double[] calcPositions(INDArray signal);
     double[] calcInput(Quote[] quotes);

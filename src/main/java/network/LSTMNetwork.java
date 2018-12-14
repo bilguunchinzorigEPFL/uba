@@ -64,9 +64,8 @@ public class LSTMNetwork extends Network{
     public SimulationResult simulate(String name, ArrayList<Quote[]> quotes, DataSet data) {
         SimulationResult result=new SimulationResult("LSTM",quotes.get(0).length);
         INDArray preds=network.output(data.getFeatures());
-        long idxLastPred=preds.shape()[2];
-        int seqLength=5;
-        for (int i = seqLength; i < quotes.size(); i++) {
+        long idxLastPred=preds.shape()[2]-1;
+        for (int i = ((int) idxLastPred)+1; i < quotes.size(); i++) {
             double[] positions=method.calcPositions(preds.getRow(i).getColumn(idxLastPred));
             result.process(quotes.get(i),positions);
         }

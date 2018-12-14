@@ -31,7 +31,6 @@ public class SimulationResult {
             double quantity=positions[i]-prevTrade.position;
             double executed_price=quotes[i].askPrice;
             if(quantity<0){ executed_price=quotes[i].bidPrice;}
-            //TODO verify pnl calculation
             prevTrade.pnl=(executed_price-prevTrade.executed_price)*(prevTrade.position);
             trades.add(prevTrade);
             prevTrades[i]=new Trade(quote.timeStamp,executed_price,quantity,positions[i]);

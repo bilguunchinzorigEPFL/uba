@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 import common.Helpers;
+import processingmethods.ProcessingMethod;
 import common.Quote;
 
 /**
@@ -23,12 +24,7 @@ public class SilverGoldGenerator implements DataGenerator {
     int sampleRate=0;
     ArrayList<Quote[]> quotes;
 
-    enum ProcessingMethod{
-        SpreadInCOut,
-        NormPriceInCOut,
-    }
-
-    public SilverGoldGenerator(double trainPercent,int sequenceLength, int shift_amount, ProcessingMethod method, int sampleRate){
+    public SilverGoldGenerator(double trainPercent, int sequenceLength, int shift_amount, ProcessingMethod method, int sampleRate){
         quotes=new ArrayList<>();
         this.sampleRate=sampleRate;
         try {
@@ -53,56 +49,31 @@ public class SilverGoldGenerator implements DataGenerator {
         } catch (Exception e){
             e.printStackTrace();
         }
-        switch (method) {
-            case SpreadInCOut:
-                dataSet=prepSpreadInCOut(quotes,trainPercent,sequenceLength,shift_amount);
-                break;
-            case NormPriceInCOut:
-                dataSet=prepNormPriceInCOut(quotes,trainPercent,sequenceLength,shift_amount);
-                break;
-        }
+        dataSet=prepDataSet(method,quotes,trainPercent,sequenceLength,shift_amount);
     }
 
-    private DataSet prepSpreadInCOut(ArrayList<Quote[]> quotes, double trainPercent, int sequenceLength, int shift_amount){
-        ArrayList<Double> spread= Quote.calcSpreadsNormalized(quotes,new double[]{1,-1});
-        int numOfSamples=spread.size()-sequenceLength-shift_amount+1;
+    private DataSet prepDataSet(ProcessingMethod method,ArrayList<Quote[]> quotes, double trainPercent, int sequenceLength, int shift_amount){
+        int numOfSamples=quotes.size()-shift_amount;
+        int numOfInstrument=quotes.get(0).length;
         trainSize=(int)(trainPercent*numOfSamples);
-
-        double[][][] data=new double[numOfSamples][1][sequenceLength];
-        double[][][] dataShifted=new double[numOfSamples][2][sequenceLength];
+        double[][] datain=new double[numOfSamples][method.getInputSize()];
+        double[][] dataout=new double[numOfSamples][method.getOutputSize()];
         for (int i = 0; i < numOfSamples; i++) {
-            for (int i1 = 0; i1 < sequenceLength; i1++) {
-                data[i][0][i1]=spread.get(i+i1);
-                int idx=0;
-                if((spread.get(i+i1+shift_amount)-spread.get(i+i1))>0){idx=1;}
-                dataShifted[i][idx][i1]=1;
+            datain[i]=method.calcInput(quotes.get(i));
+            dataout[i]=method.calcOutput(quotes.get(i),quotes.get(i+shift_amount));
+        }
+        numOfSamples-=sequenceLength+1;
+        double[][][] datainTS=new double[numOfSamples][method.getInputSize()][sequenceLength];
+        double[][][] dataoutTS=new double[numOfSamples][method.getOutputSize()][sequenceLength];
+        for (int i = 0; i < sequenceLength; i++) {
+            for (int i1 = 0; i1 < numOfSamples; i1++) {
+                for (int i2 = 0; i2 < numOfInstrument; i2++) {
+                    datainTS[i1][i2][i]=datain[i1+i][i2];
+                    dataoutTS[i1][i2][i]=dataout[i1+i][i2];
+                }
             }
         }
-        return new org.nd4j.linalg.dataset.DataSet(Nd4j.create(data),Nd4j.create(dataShifted));
-    }
-
-    private DataSet prepNormPriceInCOut(ArrayList<Quote[]> quotes, double trainPercent, int sequenceLength, int shift_amount){
-//        ArrayList<ArrayList<Double>> mids=new ArrayList<>();
-//        for (ArrayList<Quote> quoteArrayList : Quote.unZipQuotes(quotes)) {
-//            mids.add(Helpers.normalize(Quote.midPrices(quoteArrayList)));
-//        }
-//
-//        int inSize=mids.size();
-//        int numOfSamples=quotes.size()-sequenceLength-shift_amount+1;
-//        trainSize=(int)(trainPercent*numOfSamples);
-//
-//        double[][][] datain=new double[numOfSamples][inSize][sequenceLength];
-//        double[][][] dataout=new double[numOfSamples][2][sequenceLength];
-//        for (int i = 0; i < numOfSamples; i++) {
-//            for (int i1 = 0; i1 < sequenceLength; i1++) {
-//                datain[i][0][i1]=spread.get(i+i1);
-//                int idx=0;
-//                if((spread.get(i+i1+shift_amount)-spread.get(i+i1))>0){idx=1;}
-//                dataShifted[i][idx][i1]=1;
-//            }
-//        }
-//        return new org.nd4j.linalg.dataset.DataSet(Nd4j.create(data),Nd4j.create(dataShifted));
-        return null;
+        return new org.nd4j.linalg.dataset.DataSet(Nd4j.create(datainTS),Nd4j.create(dataoutTS));
     }
 
     @Override

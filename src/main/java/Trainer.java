@@ -12,12 +12,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
  * Created by beku on 11/8/2018.
  */
 public class Trainer {
-    Network trainNetwork=new LSTMNetwork(
-            new int[]{1,5,2},
-            new Adam(0.2),
-            LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD.getILossFunction(),
-            false
-    );
+    Network trainNetwork;
     DataGenerator generator;
     int epochs=1000;
 
